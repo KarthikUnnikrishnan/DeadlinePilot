@@ -31,6 +31,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+allow_origins=[
+    "http://localhost:5173",
+    "https://deadlinepilot-cd0a8.web.app"
+]
+
 # Include routes
 app.include_router(tasks.router, prefix="/api")
 app.include_router(schedule.router, prefix="/api")
