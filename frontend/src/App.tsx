@@ -1,25 +1,25 @@
-import { useState, useEffect } from 'react';
+import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import { TaskDashboard } from './components/TaskDashboard';
 import { LandingPage } from './components/LandingPage';
 import { Compass, BookOpen } from 'lucide-react';
 
 function App() {
-  const [view, setView] = useState<'landing' | 'dashboard'>('landing');
+  const navigate = useNavigate();
+  const location = useLocation();
 
-  useEffect(() => {
-    const visited = localStorage.getItem('deadlinepilot_has_visited');
-    if (visited === 'true') {
-      setView('dashboard');
-    }
-  }, []);
+  const isLanding = location.pathname === '/landing';
 
   const handleLaunch = () => {
     localStorage.setItem('deadlinepilot_has_visited', 'true');
-    setView('dashboard');
+    navigate('/');
   };
 
   const handleToggleView = () => {
-    setView(prev => prev === 'landing' ? 'dashboard' : 'landing');
+    if (isLanding) {
+      navigate('/');
+    } else {
+      navigate('/landing');
+    }
   };
 
   return (
@@ -35,7 +35,7 @@ function App() {
           onClick={handleToggleView}
           className="flex items-center gap-1.5 py-1.5 px-3 bg-slate-900/80 hover:bg-slate-800 border border-slate-800 rounded-xl text-[10px] font-bold text-slate-300 hover:text-white transition-all shadow-lg cursor-pointer"
         >
-          {view === 'landing' ? (
+          {isLanding ? (
             <>
               <Compass className="w-3.5 h-3.5 text-indigo-400" />
               Go to Deck
@@ -51,15 +51,18 @@ function App() {
 
       {/* Main content with page transition styles */}
       <main className="flex-1 relative z-10 flex flex-col justify-between">
-        {view === 'landing' ? (
-          <div className="animate-in fade-in duration-300">
-            <LandingPage onLaunch={handleLaunch} />
-          </div>
-        ) : (
-          <div className="animate-in fade-in duration-300">
-            <TaskDashboard />
-          </div>
-        )}
+        <Routes>
+          <Route path="/" element={
+            <div className="animate-in fade-in duration-300">
+              <TaskDashboard />
+            </div>
+          } />
+          <Route path="/landing" element={
+            <div className="animate-in fade-in duration-300">
+              <LandingPage onLaunch={handleLaunch} />
+            </div>
+          } />
+        </Routes>
       </main>
 
       {/* Footer */}
